@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App theme colors -->
+    <color name="primary">#003366</color>
+    <color name="primary_variant">#4F46E5</color>
+    <color name="secondary">#2ED9B1</color>
+    <color name="secondary_variant">#14B8A6</color>
+
+
+    <color name="income_light">#E8F5E9</color>
+    <color name="expense_light">#FFEBEE</color>
+
+
+    <color name="splash_accent">#1976D2</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#4B5563</color>
+
+    <!-- Background colors -->
+    <color name="splash_background">#FFFFFF</color>
+
+    <!-- Indicator colors -->
+    <color name="indicator_inactive">#E5E7EB</color>
+
+    <!-- Gradient colors -->
+    <color name="gradient_start">#6366F1</color>
+    <color name="gradient_end">#2DD4BF</color>
+
+    <!-- Transaction colors -->
+    <color name="income_green">#00C853</color>
+    <color name="expense_red">#FF5252</color>
+    <color name="warning_orange">#FFC107</color>
+
+    <!-- Category colors -->
+    <color name="category_food">#FF6B6B</color>
+    <color name="category_bills">#4A6FE3</color>
+    <color name="category_transport">#34C759</color>
+    <color name="category_shopping">#AF52DE</color>
+    <color name="category_entertainment">#FF9500</color>
+    <color name="category_health">#00C8D6</color>
+    <color name="category_other">#0040D6</color>
+
+
+
+    <color name="background_light">#F5F5F5</color>
+    <color name="divider">#E0E0E0</color>
+
+
+    <color name="unread_notification_bg">#E3F2FD</color>
+    <!-- System colors -->
+    <color name="background">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="card_background">#FFFFFF</color>
+    <color name="stroke_color">#E0E0E0</color>
+
+    <color name="primary_light">#64B5F6</color>
+
+</resources>
