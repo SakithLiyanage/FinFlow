@@ -73,9 +73,8 @@ class AddBudgetActivity : AppCompatActivity() {
                 chipIcon = getDrawable(category.iconResId)
                 chipIconTint = ColorStateList.valueOf(Color.parseColor(category.color))
                 chipBackgroundColor = ColorStateList.valueOf(Color.WHITE)
-                setTextColor(Color.parseColor("#212121")) // Dark text for all states
+                setTextColor(Color.parseColor("#212121"))
 
-                // Set up selection listener
                 setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         selectedCategory = category.name
@@ -120,11 +119,9 @@ class AddBudgetActivity : AppCompatActivity() {
             val budget = budgetsList.find { it.id == budgetId }
 
             budget?.let {
-                // Fill form with budget details
                 etBudgetAmount.setText(it.amount.toString())
                 selectedCategory = it.category
 
-                // Find and check the corresponding chip
                 for (i in 0 until categoryChipGroup.childCount) {
                     val chip = categoryChipGroup.getChildAt(i) as Chip
                     if (chip.text == it.category) {
@@ -209,7 +206,6 @@ class AddBudgetActivity : AppCompatActivity() {
                     return
                 }
 
-                // Add new budget
                 val newBudget = Budget(
                     id = UUID.randomUUID().toString(),
                     category = selectedCategory!!,
@@ -219,7 +215,6 @@ class AddBudgetActivity : AppCompatActivity() {
                 budgetsList.add(newBudget)
             }
 
-            // Save updated list
             val editor = sharedPrefs.edit()
             editor.putString("budgets_data", Gson().toJson(budgetsList))
             editor.apply()
@@ -242,11 +237,9 @@ class AddBudgetActivity : AppCompatActivity() {
             val listType = object : TypeToken<ArrayList<Budget>>() {}.type
             val budgetsList: ArrayList<Budget> = Gson().fromJson(budgetsJson, listType)
 
-            // Remove budget with matching ID
             val wasRemoved = budgetsList.removeIf { it.id == editBudgetId }
 
             if (wasRemoved) {
-                // Save updated list
                 val editor = sharedPrefs.edit()
                 editor.putString("budgets_data", Gson().toJson(budgetsList))
                 editor.apply()

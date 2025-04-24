@@ -44,7 +44,6 @@ import com.example.finflow.utils.PermissionHelper
 class ReportsActivity : AppCompatActivity() {
 
     private val TAG = "ReportsActivity"
-    // Set the timestamp and user
     private val currentDateTime = "2025-04-24 06:52:42"
     private val currentUser = "SakithLiyanage"
 
@@ -70,7 +69,7 @@ class ReportsActivity : AppCompatActivity() {
     // Filter period
     private val calendar = Calendar.getInstance()
     private val yearMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-    private var filterType = FilterType.MONTH // Default to monthly view
+    private var filterType = FilterType.MONTH
 
     // Date picker
     private val startOfMonth: Calendar
@@ -123,18 +122,15 @@ class ReportsActivity : AppCompatActivity() {
         btnImportData = findViewById(R.id.btnImportData)
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Find the chart container and add the PieChart
         val chartContainer = findViewById<View>(R.id.chartContainer)
         pieChart = PieChart(this)
         (chartContainer as android.widget.FrameLayout).addView(pieChart)
 
-        // Setup RecyclerView
         categorySummaryAdapter = CategorySummaryAdapter(categorySummaryList)
         rvCategorySummary.layoutManager = LinearLayoutManager(this)
         rvCategorySummary.adapter = categorySummaryAdapter
         rvCategorySummary.isNestedScrollingEnabled = false
 
-        // Initialize filter date button text
         updateFilterButtonText()
     }
 
@@ -230,14 +226,12 @@ class ReportsActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (PermissionHelper.handlePermissionResult(requestCode, grantResults)) {
-            // Permission was granted
             when (requestCode) {
                 101 -> {
                     Toast.makeText(this, "Permission granted! You can now export files.", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            // Permission was denied
             Toast.makeText(this, "Storage permission is required to save files", Toast.LENGTH_LONG).show()
         }
     }
@@ -258,7 +252,6 @@ class ReportsActivity : AppCompatActivity() {
         val startDate = startOfMonth
         val endDate = endOfMonth
 
-        // Filter transactions by date range
         filteredTransactions = when (filterType) {
             FilterType.MONTH -> {
                 transactionsList.filter {
@@ -307,11 +300,9 @@ class ReportsActivity : AppCompatActivity() {
     private fun generateCategorySummary() {
         categorySummaryList.clear()
 
-        // Group transactions by category
         val categoryMap = HashMap<String, Double>()
         var totalExpenses = 0.0
 
-        // Only consider expenses for category breakdown
         for (transaction in filteredTransactions) {
             if (transaction.type == TransactionType.EXPENSE) {
                 val category = transaction.category
@@ -321,25 +312,20 @@ class ReportsActivity : AppCompatActivity() {
             }
         }
 
-        // Create category summary objects
         for ((category, amount) in categoryMap) {
             val percentage = if (totalExpenses > 0) (amount / totalExpenses * 100).toInt() else 0
             categorySummaryList.add(CategorySummary(category, amount, percentage))
         }
 
-        // Sort by amount (highest first)
         categorySummaryList.sortByDescending { it.amount }
 
-        // Update the adapter
         categorySummaryAdapter.updateData(categorySummaryList)
     }
 
     private fun updatePieChart() {
-        // Create pie chart entries for Income vs Expense (not categories)
         val entries = ArrayList<PieEntry>()
         val colors = ArrayList<Int>()
 
-        // Calculate total income and expense
         var totalIncome = 0.0
         var totalExpense = 0.0
 
@@ -353,12 +339,10 @@ class ReportsActivity : AppCompatActivity() {
 
         val total = totalIncome + totalExpense
 
-        // Create entries for Income and Expense with their percentages
         if (total > 0) {
             val incomePercentage = (totalIncome / total * 100).toFloat()
             val expensePercentage = (totalExpense / total * 100).toFloat()
 
-            // Only add entries if there are values
             if (totalIncome > 0) {
                 entries.add(PieEntry(incomePercentage, "Income"))
                 colors.add(ContextCompat.getColor(this, R.color.income_green))
@@ -370,25 +354,21 @@ class ReportsActivity : AppCompatActivity() {
             }
         }
 
-        // Add placeholder if no data
         if (entries.isEmpty()) {
             entries.add(PieEntry(1f, "No Data"))
             colors.add(Color.LTGRAY)
         }
 
-        // Configure the dataset
         val dataSet = PieDataSet(entries, "")
         dataSet.colors = colors
         dataSet.sliceSpace = 3f
         dataSet.selectionShift = 5f
 
-        // Set value formatting
         val pieData = PieData(dataSet)
         pieData.setValueFormatter(PercentFormatter(pieChart))
         pieData.setValueTextSize(12f)
         pieData.setValueTextColor(Color.WHITE)
 
-        // Update chart
         pieChart.data = pieData
         pieChart.invalidate()
         pieChart.animateY(1000)
@@ -446,7 +426,6 @@ class ReportsActivity : AppCompatActivity() {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
-        // Try to hide the day picker if possible
         try {
             val datePickerField = monthYearPicker.javaClass.getDeclaredField("mDatePicker")
             datePickerField.isAccessible = true
@@ -472,11 +451,9 @@ class ReportsActivity : AppCompatActivity() {
 
     private fun exportDataAsJson() {
         try {
-            // Create JSON content
             val gson = GsonBuilder().setPrettyPrinting().create()
             val jsonString = gson.toJson(transactionsList)
 
-            // First save to shared external storage (public Documents)
             val publicDocumentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             val finflowDir = File(publicDocumentsDir, "FinFlow")
             if (!finflowDir.exists()) {
@@ -487,18 +464,15 @@ class ReportsActivity : AppCompatActivity() {
             val fileName = "finflow_export_$timestamp.json"
             val publicFile = File(finflowDir, fileName)
 
-            // Write to public storage
             FileOutputStream(publicFile).use {
                 it.write(jsonString.toByteArray())
             }
 
-            // Also save to app's private storage for sharing via FileProvider
             val privateFile = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
             FileOutputStream(privateFile).use {
                 it.write(jsonString.toByteArray())
             }
 
-            // Share the app's private copy
             shareFile(privateFile, "application/json")
 
             Toast.makeText(this, "Exported to Documents/FinFlow/$fileName", Toast.LENGTH_LONG).show()
@@ -512,7 +486,6 @@ class ReportsActivity : AppCompatActivity() {
 
     private fun exportDataAsText() {
         try {
-            // Create text content
             val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
             val stringBuilder = StringBuilder()
 
@@ -533,7 +506,6 @@ class ReportsActivity : AppCompatActivity() {
                 stringBuilder.appendLine("---------------------------------------")
             }
 
-            // First save to shared external storage (public Documents)
             val publicDocumentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             val finflowDir = File(publicDocumentsDir, "FinFlow")
             if (!finflowDir.exists()) {
@@ -544,18 +516,15 @@ class ReportsActivity : AppCompatActivity() {
             val fileName = "finflow_export_$timestamp.txt"
             val publicFile = File(finflowDir, fileName)
 
-            // Write to public storage
             FileOutputStream(publicFile).use {
                 it.write(stringBuilder.toString().toByteArray())
             }
 
-            // Also save to app's private storage for sharing via FileProvider
             val privateFile = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
             FileOutputStream(privateFile).use {
                 it.write(stringBuilder.toString().toByteArray())
             }
 
-            // Share the app's private copy
             shareFile(privateFile, "text/plain")
 
             Toast.makeText(this, "Exported to Documents/FinFlow/$fileName", Toast.LENGTH_LONG).show()
@@ -591,7 +560,6 @@ class ReportsActivity : AppCompatActivity() {
             val reader = BufferedReader(InputStreamReader(inputStream))
             val content = reader.readText()
 
-            // Try to parse as JSON
             val listType = object : TypeToken<ArrayList<Transaction>>() {}.type
             val importedTransactions = Gson().fromJson<ArrayList<Transaction>>(content, listType)
 
@@ -626,7 +594,6 @@ class ReportsActivity : AppCompatActivity() {
                 Log.d(TAG, "Replaced all transactions with ${importedTransactions.size} imported items at $currentDateTime by $currentUser")
             }
             .setNeutralButton("Add to Existing") { _, _ ->
-                // Add imported data to current data (avoiding duplicates by ID)
                 val existingIds = transactionsList.map { it.id }.toSet()
                 val newTransactions = importedTransactions.filter { it.id !in existingIds }
                 transactionsList.addAll(newTransactions)
@@ -653,7 +620,7 @@ class ReportsActivity : AppCompatActivity() {
         try {
             val fileUri = FileProvider.getUriForFile(
                 this,
-                "${packageName}.fileprovider", // Make sure this matches the authority in AndroidManifest.xml
+                "${packageName}.fileprovider",
                 file
             )
 
@@ -676,20 +643,16 @@ enum class FilterType {
     MONTH, YEAR, ALL_TIME
 }
 
-// Model class for category summary items
 data class CategorySummary(
     val category: String,
     val amount: Double,
     val percentage: Int
 )
 
-// Adapter class for RecyclerView
-// Make sure this code is in ReportsActivity.kt
 class CategorySummaryAdapter(private var items: List<CategorySummary>) :
     RecyclerView.Adapter<CategorySummaryAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        // Simplify the ViewHolder to just reference the views we definitely have
         val tvCategory: TextView = view.findViewById(R.id.tvCategory)
         val tvAmount: TextView = view.findViewById(R.id.tvAmount)
         val progressBar: View = view.findViewById(R.id.progressBar)
@@ -697,7 +660,6 @@ class CategorySummaryAdapter(private var items: List<CategorySummary>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Create a new view
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_category_summary, parent, false)
         return ViewHolder(view)
@@ -706,17 +668,14 @@ class CategorySummaryAdapter(private var items: List<CategorySummary>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        // Set text data
         holder.tvCategory.text = item.category
         holder.tvAmount.text = String.format("LKR %.2f", item.amount)
         holder.tvPercentage.text = "${item.percentage}%"
 
-        // Fix for progress bar not showing - use post to ensure the view is measured
         holder.itemView.post {
             val parentWidth = holder.itemView.findViewById<FrameLayout>(R.id.progressBarContainer).width
             val progressWidth = (item.percentage * parentWidth) / 100
 
-            // Ensure minimum width for visibility
             val finalWidth = maxOf(progressWidth, 4).toInt()
 
             val layoutParams = holder.progressBar.layoutParams

@@ -34,7 +34,6 @@ class OnboardingAdapter(private val onboardingItems: List<OnboardingItem>) :
             textTitle.text = onboardingItem.title
             textDescription.text = onboardingItem.description
 
-            // Apply animations
             imageOnboarding.alpha = 0f
             textTitle.alpha = 0f
             textDescription.alpha = 0f

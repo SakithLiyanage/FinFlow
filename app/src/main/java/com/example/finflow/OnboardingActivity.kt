@@ -24,19 +24,16 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
-        // Make status bar transparent
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
-        // Initialize views
         onboardingViewPager = findViewById(R.id.onboardingViewPager)
         indicatorsContainer = findViewById(R.id.indicatorsContainer)
         btnNext = findViewById(R.id.btnNext)
         btnSkip = findViewById(R.id.btnSkip)
         btnGetStarted = findViewById(R.id.btnGetStarted)
 
-        // Set up adapter
         val onboardingItems = listOf(
             OnboardingItem(
                 R.drawable.onboarding_image1,
@@ -58,24 +55,19 @@ class OnboardingActivity : AppCompatActivity() {
         val adapter = OnboardingAdapter(onboardingItems)
         onboardingViewPager.adapter = adapter
 
-        // Set up indicators
         setupIndicators()
         setCurrentIndicator(0)
 
-        // Set up page change listener
         onboardingViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 setCurrentIndicator(position)
 
-                // Handle button visibility based on position
                 if (position == onboardingItems.size - 1) {
-                    // On last screen
                     btnNext.visibility = View.INVISIBLE
                     btnSkip.visibility = View.INVISIBLE
                     btnGetStarted.visibility = View.VISIBLE
                 } else {
-                    // Not on last screen
                     btnNext.visibility = View.VISIBLE
                     btnSkip.visibility = View.VISIBLE
                     btnGetStarted.visibility = View.INVISIBLE
@@ -83,7 +75,6 @@ class OnboardingActivity : AppCompatActivity() {
             }
         })
 
-        // Set up button click listeners
         btnNext.setOnClickListener {
             if (onboardingViewPager.currentItem < onboardingItems.size - 1) {
                 onboardingViewPager.currentItem += 1
@@ -100,11 +91,9 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun navigateToWelcomeScreen() {
-        // Save that onboarding is complete
         val sharedPreferences = getSharedPreferences("onboarding_pref", MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("is_onboarding_completed", true).apply()
 
-        // Navigate to welcome activity instead of home
         startActivity(Intent(this, WelcomeActivity::class.java))
         finish()
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)

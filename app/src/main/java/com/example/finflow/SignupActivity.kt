@@ -30,13 +30,11 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // Make status bar transparent with light icons
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
-        // Initialize views
         fullNameInputLayout = findViewById(R.id.fullNameInputLayout)
         emailInputLayout = findViewById(R.id.emailInputLayout)
         passwordInputLayout = findViewById(R.id.passwordInputLayout)
@@ -47,10 +45,8 @@ class SignupActivity : AppCompatActivity() {
         tvLogin = findViewById(R.id.tvLogin)
         btnBack = findViewById(R.id.btnBack)
 
-        // Set up input validation watchers
         setupInputValidation()
 
-        // Set click listeners
         btnBack.setOnClickListener {
             onBackPressed()
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
@@ -110,13 +106,11 @@ class SignupActivity : AppCompatActivity() {
 
         var isValid = true
 
-        // Validate fullName
         if (fullName.isEmpty()) {
             fullNameInputLayout.error = "Name is required"
             isValid = false
         }
 
-        // Validate email
         if (email.isEmpty()) {
             emailInputLayout.error = "Email is required"
             isValid = false
@@ -125,7 +119,6 @@ class SignupActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validate password
         if (password.isEmpty()) {
             passwordInputLayout.error = "Password is required"
             isValid = false
@@ -135,7 +128,6 @@ class SignupActivity : AppCompatActivity() {
         }
 
         if (isValid) {
-            // Check if user already exists
             val sharedPreferences = getSharedPreferences("finflow_users", MODE_PRIVATE)
             if (sharedPreferences.contains(email)) {
                 Snackbar.make(
@@ -144,29 +136,24 @@ class SignupActivity : AppCompatActivity() {
                     Snackbar.LENGTH_SHORT
                 ).show()
             } else {
-                // Save user data
                 val editor = sharedPreferences.edit()
                 editor.putString(email, password)
                 editor.apply()
 
-                // Save user profile data
                 val profilePref = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
                 val profileEditor = profilePref.edit()
                 profileEditor.putString("${email}_name", fullName)
                 profileEditor.putString("${email}_created", System.currentTimeMillis().toString())
                 profileEditor.apply()
 
-                // Create a login session
                 val sessionPref = getSharedPreferences("finflow_session", MODE_PRIVATE)
                 val sessionEditor = sessionPref.edit()
                 sessionEditor.putBoolean("is_logged_in", true)
                 sessionEditor.putString("logged_in_email", email)
                 sessionEditor.apply()
 
-                // Show animation and feedback
                 btnSignUpSubmit.startAnimation()
 
-                // Navigate to Home Activity with a slight delay for animation
                 android.os.Handler().postDelayed({
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
@@ -181,7 +168,6 @@ class SignupActivity : AppCompatActivity() {
         return email.matches(emailPattern.toRegex())
     }
 
-    // Extension function for button loading animation
     private fun MaterialButton.startAnimation() {
         this.isEnabled = false
         this.text = "Creating Account..."

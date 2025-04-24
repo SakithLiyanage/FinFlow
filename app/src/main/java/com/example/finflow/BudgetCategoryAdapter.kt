@@ -63,7 +63,6 @@ class BudgetCategoryAdapter(
                 }
                 progressBar.progress = progress
 
-                // Set progress bar color based on budget status
                 try {
                     val progressColor = when {
                         progress > 90 -> R.color.expense_red
@@ -77,12 +76,9 @@ class BudgetCategoryAdapter(
                     Log.e(TAG, "Error setting progress color", e)
                 }
 
-                // FIXED: Ensure the correct category icon is assigned and rendered
                 try {
-                    // Start with safe default
                     var iconResource = R.drawable.ic_category
 
-                    // Map category name to corresponding icon, falling back to default icon
                     when (category.name.lowercase()) {
                         "food" -> iconResource = R.drawable.ic_food
                         "bills" -> iconResource = R.drawable.ic_bills
@@ -94,10 +90,8 @@ class BudgetCategoryAdapter(
                         else -> iconResource = if (category.iconResId != 0) category.iconResId else R.drawable.ic_category
                     }
 
-                    // Set the icon image
                     ivCategoryIcon.setImageResource(iconResource)
 
-                    // Set the icon color
                     val categoryColor = ContextCompat.getColor(
                         itemView.context,
                         category.colorResId.takeIf { it != 0 } ?: R.color.primary
@@ -113,7 +107,6 @@ class BudgetCategoryAdapter(
                     )
                 }
 
-                // Set edit button click listener
                 btnEditCategory.setOnClickListener {
                     onEditClick(category)
                 }

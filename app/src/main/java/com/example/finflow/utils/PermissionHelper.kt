@@ -12,8 +12,6 @@ object PermissionHelper {
 
     fun checkStoragePermissions(activity: Activity): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // For Android 11 and above, we're using scoped storage
-            // so we don't need explicit permissions for the Documents folder
             true
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val writePermission = ContextCompat.checkSelfPermission(
@@ -32,7 +30,6 @@ object PermissionHelper {
                 true
             }
         } else {
-            // For Android 5.1 and below, permissions are granted at install time
             true
         }
     }

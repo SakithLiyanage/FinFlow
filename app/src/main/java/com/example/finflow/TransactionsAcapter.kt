@@ -22,14 +22,12 @@ class TransactionsAdapter(
 
     private val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     private val categoryColorMap = mapOf(
-        // Income categories
         "Salary" to "#4CAF50",
         "Freelance" to "#8BC34A",
         "Investments" to "#009688",
         "Gifts" to "#00BCD4",
         "Other Income" to "#03A9F4",
 
-        // Expense categories
         "Food" to "#FF5722",
         "Transport" to "#FF9800",
         "Shopping" to "#F44336",
@@ -46,11 +44,9 @@ class TransactionsAdapter(
         val tvTransactionCategory: TextView = itemView.findViewById(R.id.tvTransactionCategory)
         val tvTransactionDate: TextView = itemView.findViewById(R.id.tvTransactionDate)
         val tvTransactionAmount: TextView = itemView.findViewById(R.id.tvTransactionAmount)
-        // Change from ImageView to MaterialButton to match your layout
         val btnDeleteTransaction: MaterialButton = itemView.findViewById(R.id.btnDeleteTransaction)
         val transactionContainer: View = itemView.findViewById(R.id.transactionContainer)
 
-        // Handle possible null using safe find
         val tvTransactionNote: TextView? = itemView.findViewById(R.id.tvTransactionNote)
     }
 
@@ -63,12 +59,10 @@ class TransactionsAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
 
-        // Set transaction details
         holder.tvTransactionTitle.text = transaction.title
         holder.tvTransactionCategory.text = transaction.category
         holder.tvTransactionDate.text = formatDate(transaction.date)
 
-        // Set note if available
         holder.tvTransactionNote?.let {
             if (transaction.notes.isNotEmpty()) {
                 it.text = transaction.notes
@@ -78,7 +72,6 @@ class TransactionsAdapter(
             }
         }
 
-        // Set amount with formatting based on type
         if (transaction.type == TransactionType.INCOME) {
             holder.tvTransactionAmount.text = String.format("+LKR %.2f", transaction.amount)
             holder.tvTransactionAmount.setTextColor(Color.parseColor("#4CAF50")) // Green for income
@@ -87,11 +80,9 @@ class TransactionsAdapter(
             holder.tvTransactionAmount.setTextColor(Color.parseColor("#F44336")) // Red for expense
         }
 
-        // Set category color
         val categoryColor = categoryColorMap[transaction.category] ?: "#607D8B" // Default gray
         holder.categoryIndicator.backgroundTintList = ColorStateList.valueOf(Color.parseColor(categoryColor))
 
-        // Click listeners
         holder.transactionContainer.setOnClickListener {
             onTransactionClick(transaction)
         }
@@ -147,15 +138,12 @@ class TransactionsAdapter(
             val typeToken = object : TypeToken<ArrayList<Transaction>>() {}
             val allTransactions: ArrayList<Transaction> = gson.fromJson(transactionsJson, typeToken.type)
 
-            // Remove the transaction
             allTransactions.removeIf { it.id == transaction.id }
 
-            // Save back to SharedPreferences
             val editor = sharedPrefs.edit()
             editor.putString("transactions_data", gson.toJson(allTransactions))
             editor.apply()
 
-            // Update our local list and notify adapter
             transactions.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, transactions.size)

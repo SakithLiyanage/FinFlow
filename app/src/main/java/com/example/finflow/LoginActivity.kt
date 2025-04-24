@@ -30,13 +30,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Make status bar transparent with light icons
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
-        // Initialize views
         emailInputLayout = findViewById(R.id.emailInputLayout)
         passwordInputLayout = findViewById(R.id.passwordInputLayout)
         etEmail = findViewById(R.id.etEmail)
@@ -46,10 +44,8 @@ class LoginActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
 
-        // Set up input validation watchers
         setupInputValidation()
 
-        // Set click listeners
         btnBack.setOnClickListener {
             onBackPressed()
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
@@ -66,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
         tvForgotPassword.setOnClickListener {
-            // Implement forgot password feature
             Snackbar.make(
                 findViewById(android.R.id.content),
                 "Password reset link will be sent to your email",
@@ -103,7 +98,6 @@ class LoginActivity : AppCompatActivity() {
 
         var isValid = true
 
-        // Validate email
         if (email.isEmpty()) {
             emailInputLayout.error = "Email is required"
             isValid = false
@@ -112,36 +106,28 @@ class LoginActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validate password
         if (password.isEmpty()) {
             passwordInputLayout.error = "Password is required"
             isValid = false
         }
 
         if (isValid) {
-            // Check if user exists in SharedPreferences
             val sharedPreferences = getSharedPreferences("finflow_users", MODE_PRIVATE)
             val savedPassword = sharedPreferences.getString(email, "")
 
             if (savedPassword != "" && savedPassword == password) {
-                // Login successful
-
-                // Save login session
                 val sessionPref = getSharedPreferences("finflow_session", MODE_PRIVATE)
                 val editor = sessionPref.edit()
                 editor.putBoolean("is_logged_in", true)
                 editor.putString("logged_in_email", email)
                 editor.apply()
 
-                // Show animation and feedback
                 btnLoginSubmit.startAnimation()
 
-                // Navigate to Home Activity
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             } else {
-                // Login failed
                 Snackbar.make(
                     findViewById(android.R.id.content),
                     "Invalid email or password",
@@ -156,7 +142,6 @@ class LoginActivity : AppCompatActivity() {
         return email.matches(emailPattern.toRegex())
     }
 
-    // Extension function for button loading animation
     private fun MaterialButton.startAnimation() {
         this.isEnabled = false
         this.text = "Signing in..."

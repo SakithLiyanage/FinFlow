@@ -59,7 +59,6 @@ class BudgetsAdapter(
         val budget = budgets[position]
         val context = holder.itemView.context
 
-        // Set category name and icon
         holder.tvBudgetCategory.text = budget.category
 
         val iconResId = categoryIconMap[budget.category] ?: R.drawable.ic_other
@@ -68,25 +67,21 @@ class BudgetsAdapter(
         val categoryColor = categoryColorMap[budget.category] ?: "#607D8B"
         holder.ivCategoryIcon.imageTintList = ColorStateList.valueOf(Color.parseColor(categoryColor))
 
-        // Set spent and limit values
         holder.tvBudgetSpent.text = String.format("LKR %.2f", budget.spent)
         holder.tvBudgetLimit.text = String.format("LKR %.2f", budget.amount)
 
-        // Calculate progress
         val percentage = if (budget.amount > 0) (budget.spent / budget.amount * 100).toInt() else 0
         holder.tvBudgetPercentage.text = "$percentage%"
         holder.categoryBudgetProgress.progress = percentage
 
-        // Set progress bar color based on usage percentage
         val progressColor = when {
-            percentage < 50 -> Color.parseColor("#4CAF50") // Green
-            percentage < 80 -> Color.parseColor("#FFC107") // Yellow
-            percentage < 100 -> Color.parseColor("#FF9800") // Orange
+            percentage < 50 -> Color.parseColor("#4CAF50")
+            percentage < 80 -> Color.parseColor("#FFC107")
+            percentage < 100 -> Color.parseColor("#FF9800")
             else -> Color.parseColor("#F44336") // Red
         }
         holder.categoryBudgetProgress.setIndicatorColor(progressColor)
 
-        // Set click listeners
         holder.btnEditBudget.setOnClickListener {
             onEditClick(budget)
         }

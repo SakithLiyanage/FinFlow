@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Hide system UI (full screen)
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -32,16 +31,13 @@ class MainActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
 
-        // Initialize views
         ivLogo = findViewById(R.id.ivLogo)
         tvAppName = findViewById(R.id.tvAppName)
         tvTagline = findViewById(R.id.tvTagline)
         progressBar = findViewById(R.id.progressBar)
 
-        // Start animations
         startAnimations()
 
-        // Navigate to next activity after animations
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this@MainActivity, OnboardingActivity::class.java)
             startActivity(intent)
@@ -50,17 +46,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startAnimations() {
-        // Logo animations
         val scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_up)
         val fadeAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
 
-        // Combine animations for logo
         val logoAnimSet = AnimationSet(true)
         logoAnimSet.addAnimation(scaleAnimation)
         logoAnimSet.addAnimation(fadeAnimation)
         ivLogo.startAnimation(logoAnimSet)
 
-        // Text animations
         val slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up)
         slideUp.startOffset = 400
         tvAppName.startAnimation(slideUp)
@@ -69,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         slideUpTagline.startOffset = 600
         tvTagline.startAnimation(slideUpTagline)
 
-        // Progress bar animations
         progressBar.scaleX = 0f
         progressBar.animate()
             .scaleX(1f)
@@ -82,10 +74,8 @@ class MainActivity : AppCompatActivity() {
         val isOnboardingCompleted = sharedPreferences.getBoolean("is_onboarding_completed", false)
 
         if (isOnboardingCompleted) {
-            // User has completed onboarding, go to home
             startActivity(Intent(this, HomeActivity::class.java))
         } else {
-            // User needs to see onboarding
             startActivity(Intent(this, OnboardingActivity::class.java))
         }
         finish()

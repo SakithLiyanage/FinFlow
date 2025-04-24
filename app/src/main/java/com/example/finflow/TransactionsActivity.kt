@@ -56,7 +56,6 @@ class TransactionsActivity : AppCompatActivity() {
         setupNavigation()
         setupListeners()
 
-        // Check if we should pre-select a specific filter type
         handleIntent()
         loadTransactions()
         updateMonthDisplay()
@@ -83,7 +82,6 @@ class TransactionsActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         fabAddTransaction = findViewById(R.id.fabAddTransaction)
 
-        // Setup RecyclerView
         adapter = TransactionsAdapter(filteredTransactions) { transaction ->
             // Handle transaction click
             val intent = Intent(this, AddTransactionActivity::class.java)
@@ -138,7 +136,6 @@ class TransactionsActivity : AppCompatActivity() {
             showMonthYearPicker()
         }
 
-        // Setup chip group listener
         chipGroup.setOnCheckedChangeListener { group, checkedId ->
             currentFilter = when (checkedId) {
                 R.id.chipIncome -> FilterType.INCOME
@@ -148,12 +145,10 @@ class TransactionsActivity : AppCompatActivity() {
             filterTransactions()
         }
 
-        // Default to "All" filter
         chipGroup.check(R.id.chipAll)
     }
 
     private fun handleIntent() {
-        // Check if we should pre-select a filter type
         val filterType = intent.getStringExtra("FILTER_TYPE")
         when (filterType) {
             "INCOME" -> {
@@ -188,7 +183,6 @@ class TransactionsActivity : AppCompatActivity() {
     }
 
     private fun filterTransactions() {
-        // Filter by month
         val startMonth = calendar.clone() as Calendar
         startMonth.set(Calendar.DAY_OF_MONTH, 1)
         startMonth.set(Calendar.HOUR_OF_DAY, 0)
@@ -203,7 +197,6 @@ class TransactionsActivity : AppCompatActivity() {
         endMonth.set(Calendar.SECOND, 59)
         endMonth.set(Calendar.MILLISECOND, 999)
 
-        // Filter by month and type
         filteredTransactions = when (currentFilter) {
             FilterType.INCOME -> transactionsList.filter {
                 it.date.time >= startMonth.timeInMillis &&
@@ -221,10 +214,8 @@ class TransactionsActivity : AppCompatActivity() {
             } as ArrayList<Transaction>
         }
 
-        // Sort by date (newest first)
         filteredTransactions.sortByDescending { it.date }
 
-        // Update UI
         updateTransactionsList()
         calculateSummary()
     }
@@ -245,7 +236,6 @@ class TransactionsActivity : AppCompatActivity() {
         var totalIncome = 0.0
         var totalExpense = 0.0
 
-        // Calculate for the filtered month
         val startMonth = calendar.clone() as Calendar
         startMonth.set(Calendar.DAY_OF_MONTH, 1)
         startMonth.set(Calendar.HOUR_OF_DAY, 0)
@@ -292,7 +282,6 @@ class TransactionsActivity : AppCompatActivity() {
             1
         )
 
-        // Try to hide the day picker
         try {
             val datePickerField = DatePickerDialog::class.java.getDeclaredField("mDatePicker")
             datePickerField.isAccessible = true

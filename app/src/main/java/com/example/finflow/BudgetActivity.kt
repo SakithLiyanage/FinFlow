@@ -64,7 +64,6 @@ class BudgetsActivity : AppCompatActivity() {
         btnAddBudget = findViewById(R.id.btnAddBudget)
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Setup RecyclerView
         adapter = BudgetsAdapter(
             budgetsList,
             onEditClick = { budget ->
@@ -122,12 +121,10 @@ class BudgetsActivity : AppCompatActivity() {
             budgetsList.clear()
         }
 
-        // Calculate spent amounts for each budget
         calculateSpentAmounts()
     }
 
     private fun calculateSpentAmounts() {
-        // Load transactions to calculate spent amounts
         val sharedPrefs = getSharedPreferences("finflow_transactions", MODE_PRIVATE)
         val transactionsJson = sharedPrefs.getString("transactions_data", null)
         val transactions = ArrayList<Transaction>()
@@ -137,19 +134,16 @@ class BudgetsActivity : AppCompatActivity() {
             transactions.addAll(Gson().fromJson(transactionsJson, listType))
         }
 
-        // Get current month
         val cal = Calendar.getInstance()
         val currentMonth = cal.get(Calendar.MONTH)
         val currentYear = cal.get(Calendar.YEAR)
 
-        // Calculate total budget and spent
         totalBudget = 0.0
         totalSpent = 0.0
 
         for (budget in budgetsList) {
             var spent = 0.0
 
-            // Find transactions in the current month that match the budget category
             for (transaction in transactions) {
                 val transCal = Calendar.getInstance()
                 transCal.time = transaction.date
@@ -180,7 +174,6 @@ class BudgetsActivity : AppCompatActivity() {
         tvBudgetPercentage.text = "$percentage%"
         budgetProgressBar.progress = percentage
 
-        // Update message based on spent percentage
         when {
             percentage < 50 -> {
                 tvBudgetMessage.text = "You're on track with your monthly budget!"
@@ -216,13 +209,11 @@ class BudgetsActivity : AppCompatActivity() {
     private fun deleteBudget(budget: Budget) {
         budgetsList.remove(budget)
 
-        // Save updated budgets
         val sharedPrefs = getSharedPreferences("finflow_budgets", MODE_PRIVATE)
         val editor = sharedPrefs.edit()
         editor.putString("budgets_data", Gson().toJson(budgetsList))
         editor.apply()
 
-        // Recalculate and update UI
         calculateSpentAmounts()
         updateBudgetsList()
     }

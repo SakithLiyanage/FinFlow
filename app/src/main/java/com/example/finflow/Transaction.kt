@@ -16,6 +16,5 @@ data class Transaction(
     val date: Date = Date(),
     val notes: String = "",
     val userId: String = "SakithLiyanage",
-    // Optional timestamp field with default
     val timestamp: String? = null
 )

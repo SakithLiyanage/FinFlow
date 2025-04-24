@@ -22,11 +22,9 @@ class ProfileActivity : AppCompatActivity() {
 
     private val TAG = "ProfileActivity"
 
-    // Updated timestamp and user info
     private val currentDateTime = "2025-04-24 08:49:42"
     private val currentUser = "SakithLiyanage"
 
-    // UI Elements
     private lateinit var ivProfilePicture: ImageView
     private lateinit var tvUserFullName: TextView
     private lateinit var tvUserEmail: TextView
@@ -41,7 +39,6 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var btnDeleteAccount: MaterialButton
     private lateinit var btnBack: ImageView
 
-    // User data
     private var userEmail = ""
     private var userName = ""
     private var userPhone = ""
@@ -52,13 +49,10 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         try {
-            // Initialize views
             initViews()
 
-            // Load user data
             loadUserData()
 
-            // Set up click listeners
             setupClickListeners()
 
             Log.d(TAG, "ProfileActivity created at $currentDateTime")
@@ -87,11 +81,9 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadUserData() {
         try {
-            // Use exactly the same approach as in HomeActivity
             val sharedPreferences = getSharedPreferences("finflow_session", MODE_PRIVATE)
             userEmail = sharedPreferences.getString("logged_in_email", "") ?: ""
 
-            // Load profile data
             val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
             userName = profilePrefs.getString("${userEmail}_name", currentUser) ?: currentUser
             userPhone = profilePrefs.getString("${userEmail}_phone", "+94 77 123 4567") ?: "+94 77 123 4567"
@@ -99,12 +91,10 @@ class ProfileActivity : AppCompatActivity() {
             Log.d(TAG, "Loading user data: Email=$userEmail, Name=$userName")
 
             if (userEmail.isEmpty()) {
-                // Fallback if no email is found
                 Log.w(TAG, "No user email found in session, using default values")
                 userEmail = "user@example.com"
             }
 
-            // Display user data
             tvUserFullName.text = userName
             tvUserEmail.text = userEmail
             etFullName.setText(userName)
@@ -113,7 +103,6 @@ class ProfileActivity : AppCompatActivity() {
 
         } catch (e: Exception) {
             Log.e(TAG, "Error loading user data", e)
-            // Set defaults if loading fails
             tvUserFullName.text = currentUser
             tvUserEmail.text = "user@example.com"
             etFullName.setText(currentUser)
@@ -123,33 +112,27 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // Back button
         btnBack.setOnClickListener {
             finish()
         }
 
-        // Edit Profile button
         btnEditProfile.setOnClickListener {
             toggleEditMode(true)
         }
 
-        // Save Profile button
         btnSaveProfile.setOnClickListener {
             saveProfileChanges()
             toggleEditMode(false)
         }
 
-        // Change Password button
         btnChangePassword.setOnClickListener {
             showChangePasswordDialog()
         }
 
-        // Logout button
         btnLogout.setOnClickListener {
             confirmLogout()
         }
 
-        // Delete Account button
         btnDeleteAccount.setOnClickListener {
             confirmDeleteAccount()
         }
@@ -158,15 +141,12 @@ class ProfileActivity : AppCompatActivity() {
     private fun toggleEditMode(edit: Boolean) {
         isEditMode = edit
 
-        // Enable/disable fields
         etFullName.isEnabled = edit
         etPhone.isEnabled = edit
 
-        // Show/hide appropriate buttons
         btnEditProfile.visibility = if (edit) View.GONE else View.VISIBLE
         btnSaveProfile.visibility = if (edit) View.VISIBLE else View.GONE
 
-        // Add focus and selection if entering edit mode
         if (edit) {
             etFullName.requestFocus()
             etFullName.setSelection(etFullName.text?.length ?: 0)
@@ -178,13 +158,11 @@ class ProfileActivity : AppCompatActivity() {
             val newName = etFullName.text.toString().trim()
             val newPhone = etPhone.text.toString().trim()
 
-            // Validate inputs
             if (newName.isEmpty()) {
                 Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show()
                 return
             }
 
-            // Important: Save using the exact same approach as HomeActivity reads from
             val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
             profilePrefs.edit().apply {
                 putString("${userEmail}_name", newName)
@@ -192,7 +170,6 @@ class ProfileActivity : AppCompatActivity() {
                 apply()
             }
 
-            // Update UI
             userName = newName
             userPhone = newPhone
             tvUserFullName.text = userName
@@ -208,10 +185,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun showChangePasswordDialog() {
         try {
-            // Create custom dialog layout
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_change_password, null)
 
-            // Get references to EditText fields
             val etCurrentPassword = dialogView.findViewById<EditText>(R.id.etCurrentPassword)
             val etNewPassword = dialogView.findViewById<EditText>(R.id.etNewPassword)
             val etConfirmPassword = dialogView.findViewById<EditText>(R.id.etConfirmPassword)
@@ -222,7 +197,6 @@ class ProfileActivity : AppCompatActivity() {
                 return
             }
 
-            // Create the AlertDialog
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle("Change Password")
                 .setView(dialogView)
@@ -231,16 +205,13 @@ class ProfileActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel", null)
                 .create()
 
-            // Show the dialog
             alertDialog.show()
 
-            // Set a click listener for the positive button after dialog is shown
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val currentPassword = etCurrentPassword.text.toString().trim()
                 val newPassword = etNewPassword.text.toString().trim()
                 val confirmPassword = etConfirmPassword.text.toString().trim()
 
-                // Basic validation
                 if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
                     Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -256,7 +227,6 @@ class ProfileActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                // Verify current password (match with HomeActivity's approach)
                 val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
                 val storedPassword = profilePrefs.getString("${userEmail}_password", "")
 
@@ -267,7 +237,6 @@ class ProfileActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                // Update password
                 try {
                     profilePrefs.edit().apply {
                         putString("${userEmail}_password", newPassword)
@@ -301,14 +270,11 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun performLogout() {
         try {
-            // Clear session using the same key as HomeActivity
             val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
             sessionPrefs.edit().clear().apply()
 
-            // Navigate to login page
             navigateToLogin()
 
-            // Show toast
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "User logged out at $currentDateTime")
 
@@ -333,14 +299,12 @@ class ProfileActivity : AppCompatActivity() {
         try {
             Log.d(TAG, "Attempting to delete account for user: $userEmail")
 
-            // First verify that we have a valid user email
             if (userEmail.isEmpty()) {
                 Log.e(TAG, "Cannot delete account - no user email available")
                 Toast.makeText(this, "Error deleting account: user information missing", Toast.LENGTH_SHORT).show()
                 return
             }
 
-            // Delete user data with the same approach as HomeActivity
             val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
             profilePrefs.edit().apply {
                 remove("${userEmail}_name")
@@ -350,15 +314,12 @@ class ProfileActivity : AppCompatActivity() {
                 apply()
             }
 
-            // Clear session
             val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
             sessionPrefs.edit().clear().apply()
 
-            // Success toast
             Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "Account deleted at $currentDateTime")
 
-            // Navigate to login - using a slight delay to ensure toast is visible
             Handler(Looper.getMainLooper()).postDelayed({
                 navigateToLogin()
             }, 1000)
@@ -377,7 +338,6 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Log.e(TAG, "Error navigating to login", e)
-            // If navigation fails, try to force close the app as fallback
             finishAffinity()
         }
     }
