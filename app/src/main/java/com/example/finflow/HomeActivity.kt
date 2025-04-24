@@ -508,7 +508,7 @@ class HomeActivity : AppCompatActivity() {
                 .setMessage("You've used ${(totalSpent / monthlyBudget * 100).toInt()}% of your monthly budget.")
                 .setPositiveButton("Adjust Budget") { _, _ ->
                     // Open budget settings
-                    val intent = Intent(this, BudgetActivity::class.java)
+                    val intent = Intent(this, BudgetsActivity::class.java)
                     startActivity(intent)
                 }
                 .setNegativeButton("Dismiss") { dialog, _ ->
@@ -616,7 +616,7 @@ class HomeActivity : AppCompatActivity() {
 
             // View budget details
             viewBudgetDetails.setOnClickListener {
-                val intent = Intent(this, BudgetActivity::class.java)
+                val intent = Intent(this, BudgetsActivity::class.java)
                 startActivity(intent)
             }
         } catch (e: Exception) {
@@ -640,7 +640,7 @@ class HomeActivity : AppCompatActivity() {
                         true
                     }
                     R.id.nav_budget -> {
-                        val intent = Intent(this, BudgetActivity::class.java)
+                        val intent = Intent(this, BudgetsActivity::class.java)
                         startActivity(intent)
                         true
                     }

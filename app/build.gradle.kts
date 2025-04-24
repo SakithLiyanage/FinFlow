@@ -13,11 +13,12 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Move resourceConfigurations inside defaultConfig where it belongs
-        resourceConfigurations += listOf("en")
+        // Use androidResources.localeFilters instead of resourceConfigurations
+        androidResources {
+            localeFilters += listOf("en")
+        }
     }
 
     buildTypes {
@@ -27,6 +28,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // Current build information
+            buildConfigField("String", "BUILD_TIMESTAMP", "\"2025-04-24 06:49:09\"")
+            buildConfigField("String", "BUILD_USER", "\"SakithLiyanage\"")
         }
     }
 
@@ -39,12 +45,10 @@ android {
         jvmTarget = "11"
     }
 
-    // Fix for ParseLibraryResourcesTask error
     buildFeatures {
         buildConfig = true
     }
 
-    // Prevent resource conflicts between libraries
     packaging {
         resources {
             excludes += listOf(
@@ -56,20 +60,22 @@ android {
     }
 }
 
-// Add resolution strategy for dependency conflicts
 dependencies {
-    // Core Android dependencies - using stable versions to avoid conflicts
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // Using a stable ViewPager2 version to avoid conflicts
+    // ViewPager2
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 
     // Gson for JSON parsing
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // MPAndroidChart for charts
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // Testing
     testImplementation(libs.junit)
@@ -77,10 +83,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-// Optional: Add this configuration if you continue to have dependency issues
 configurations.all {
     resolutionStrategy {
         // Force specific versions if needed
-        // force("androidx.core:core-ktx:1.12.0")
     }
 }

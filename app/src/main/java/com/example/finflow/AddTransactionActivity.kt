@@ -3,6 +3,7 @@ package com.example.finflow
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,6 @@ class AddTransactionActivity : AppCompatActivity() {
     private lateinit var etDate: TextInputEditText
     private lateinit var notesInputLayout: TextInputLayout
     private lateinit var etNotes: TextInputEditText
-    private lateinit var typeChipGroup: ChipGroup
     private lateinit var incomeChip: Chip
     private lateinit var expenseChip: Chip
     private lateinit var categoryLabel: TextView
@@ -36,6 +36,11 @@ class AddTransactionActivity : AppCompatActivity() {
     private lateinit var btnSave: MaterialButton
     private lateinit var btnDelete: MaterialButton
     private lateinit var toolbar: Toolbar
+
+    // Updated time and user
+    private val currentDateTime = "2025-04-24 06:31:36"
+    private val currentUser = "SakithLiyanage"
+    private val TAG = "AddTransactionActivity"
 
     private var isEditMode = false
     private var currentTransactionId = ""
@@ -54,6 +59,8 @@ class AddTransactionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_transaction)
+
+        Log.d(TAG, "Activity created at $currentDateTime by $currentUser")
 
         // Initialize views
         initViews()
@@ -76,23 +83,32 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        toolbar = findViewById(R.id.toolbar)
-        titleInputLayout = findViewById(R.id.titleInputLayout)
-        etTitle = findViewById(R.id.etTitle)
-        amountInputLayout = findViewById(R.id.amountInputLayout)
-        etAmount = findViewById(R.id.etAmount)
-        dateInputLayout = findViewById(R.id.dateInputLayout)
-        etDate = findViewById(R.id.etDate)
-        notesInputLayout = findViewById(R.id.notesInputLayout)
-        etNotes = findViewById(R.id.etNotes)
-        typeChipGroup = findViewById(R.id.typeChipGroup)
-        incomeChip = findViewById(R.id.incomeChip)
-        expenseChip = findViewById(R.id.expenseChip)
-        categoryLabel = findViewById(R.id.categoryLabel)
-        categoryChipGroup = findViewById(R.id.categoryChipGroup)
-        btnCancel = findViewById(R.id.btnCancel)
-        btnSave = findViewById(R.id.btnSave)
-        btnDelete = findViewById(R.id.btnDelete)
+        try {
+            toolbar = findViewById(R.id.toolbar)
+            titleInputLayout = findViewById(R.id.titleInputLayout)
+            etTitle = findViewById(R.id.etTitle)
+            amountInputLayout = findViewById(R.id.amountInputLayout)
+            etAmount = findViewById(R.id.etAmount)
+            dateInputLayout = findViewById(R.id.dateInputLayout)
+            etDate = findViewById(R.id.etDate)
+            notesInputLayout = findViewById(R.id.notesInputLayout)
+            etNotes = findViewById(R.id.etNotes)
+
+            // Direct reference to chips instead of ChipGroup
+            incomeChip = findViewById(R.id.incomeChip)
+            expenseChip = findViewById(R.id.expenseChip)
+
+            categoryLabel = findViewById(R.id.categoryLabel)
+            categoryChipGroup = findViewById(R.id.categoryChipGroup)
+            btnCancel = findViewById(R.id.btnCancel)
+            btnSave = findViewById(R.id.btnSave)
+            btnDelete = findViewById(R.id.btnDelete)
+
+            Log.d(TAG, "Views initialized successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing views", e)
+            Toast.makeText(this, "Error initializing form", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setupUI() {
@@ -128,7 +144,6 @@ class AddTransactionActivity : AppCompatActivity() {
         }
     }
 
-
     private fun loadTransactionDetails() {
         val transaction = transactionsList.find { it.id == currentTransactionId }
         if (transaction != null) {
@@ -144,9 +159,11 @@ class AddTransactionActivity : AppCompatActivity() {
             // Set transaction type
             if (transaction.type == TransactionType.INCOME) {
                 incomeChip.isChecked = true
+                expenseChip.isChecked = false
                 updateCategoryChips(incomeCategories)
             } else {
                 expenseChip.isChecked = true
+                incomeChip.isChecked = false
                 updateCategoryChips(expenseCategories)
             }
 
@@ -167,20 +184,27 @@ class AddTransactionActivity : AppCompatActivity() {
             showDatePicker()
         }
 
-        // Transaction type selection
-        typeChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (checkedIds.isNotEmpty()) {
-                when (checkedIds[0]) {
-                    R.id.incomeChip -> {
-                        transactionType = TransactionType.INCOME
-                        updateCategoryChips(incomeCategories)
-                    }
-                    R.id.expenseChip -> {
-                        transactionType = TransactionType.EXPENSE
-                        updateCategoryChips(expenseCategories)
-                    }
-                }
-            }
+        // Transaction type selection - using direct chip references
+        incomeChip.setOnClickListener {
+            // Make sure to control both chips manually
+            incomeChip.isChecked = true
+            expenseChip.isChecked = false
+
+            transactionType = TransactionType.INCOME
+            updateCategoryChips(incomeCategories)
+
+            Log.d(TAG, "Transaction type set to INCOME")
+        }
+
+        expenseChip.setOnClickListener {
+            // Make sure to control both chips manually
+            expenseChip.isChecked = true
+            incomeChip.isChecked = false
+
+            transactionType = TransactionType.EXPENSE
+            updateCategoryChips(expenseCategories)
+
+            Log.d(TAG, "Transaction type set to EXPENSE")
         }
 
         // Category selection
@@ -188,6 +212,7 @@ class AddTransactionActivity : AppCompatActivity() {
             if (checkedIds.isNotEmpty()) {
                 val chip = findViewById<Chip>(checkedIds[0])
                 selectedCategory = chip.text.toString()
+                Log.d(TAG, "Selected category: $selectedCategory")
             } else {
                 selectedCategory = ""
             }
@@ -234,22 +259,32 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun updateCategoryChips(categories: List<String>) {
-        // Clear existing chips
-        categoryChipGroup.removeAllViews()
+        try {
+            // Clear existing chips
+            categoryChipGroup.removeAllViews()
 
-        // Add new category chips
-        for (category in categories) {
-            val chip = Chip(this)
-            chip.text = category
-            chip.isCheckable = true
-            chip.isCheckedIconVisible = true
+            // Add new category chips
+            for (category in categories) {
+                val chip = Chip(this)
+                chip.text = category
+                chip.isCheckable = true
+                chip.isCheckedIconVisible = true
 
-            // If we're in edit mode and this is the selected category, check it
-            if (category == selectedCategory) {
-                chip.isChecked = true
+                // If we're in edit mode and this is the selected category, check it
+                if (category == selectedCategory) {
+                    chip.isChecked = true
+                }
+
+                categoryChipGroup.addView(chip)
             }
 
-            categoryChipGroup.addView(chip)
+            // Update category label text
+            val labelText = if (transactionType == TransactionType.INCOME) "Income Category" else "Expense Category"
+            categoryLabel.text = labelText
+
+            Log.d(TAG, "Updated categories for type: $transactionType")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating category chips", e)
         }
     }
 
@@ -308,8 +343,11 @@ class AddTransactionActivity : AppCompatActivity() {
                     type = transactionType,
                     category = selectedCategory,
                     date = selectedDate,
-                    notes = notes
+                    notes = notes,
+                    userId = currentUser
                 )
+
+                Log.d(TAG, "Updated transaction ID: $currentTransactionId")
             }
         } else {
             // Create new transaction
@@ -320,9 +358,12 @@ class AddTransactionActivity : AppCompatActivity() {
                 type = transactionType,
                 category = selectedCategory,
                 date = selectedDate,
-                notes = notes
+                notes = notes,
+                userId = currentUser
             )
             transactionsList.add(newTransaction)
+
+            Log.d(TAG, "Created new transaction ID: ${newTransaction.id}")
         }
 
         // Save updated list to SharedPreferences
@@ -341,6 +382,8 @@ class AddTransactionActivity : AppCompatActivity() {
             // Save updated list to SharedPreferences
             saveTransactionsToPrefs()
 
+            Log.d(TAG, "Deleted transaction ID: $currentTransactionId")
+
             // Set result and finish
             setResult(RESULT_OK)
             finish()
@@ -353,5 +396,7 @@ class AddTransactionActivity : AppCompatActivity() {
         val transactionsJson = Gson().toJson(transactionsList)
         editor.putString("transactions_data", transactionsJson)
         editor.apply()
+
+        Log.d(TAG, "Saved ${transactionsList.size} transactions to SharedPreferences")
     }
 }

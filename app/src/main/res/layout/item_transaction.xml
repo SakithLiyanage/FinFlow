@@ -1,94 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transactionContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="1dp"
-    app:cardBackgroundColor="@color/white">
+    android:background="@drawable/transaction_item_background"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Category color indicator -->
+    <View
+        android:id="@+id/categoryIndicator"
+        android:layout_width="4dp"
+        android:layout_height="0dp"
+        android:background="@color/primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Transaction title -->
+    <TextView
+        android:id="@+id/tvTransactionTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/inter_medium"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/tvTransactionAmount"
+        app:layout_constraintStart_toEndOf="@+id/categoryIndicator"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Grocery Shopping" />
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="10dp"
-            app:cardBackgroundColor="@color/primary">
+    <!-- Transaction category -->
+    <TextView
+        android:id="@+id/tvTransactionCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/inter"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tvTransactionTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvTransactionTitle"
+        tools:text="Food" />
 
-            <ImageView
-                android:id="@+id/ivTransactionIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/transaction_icon"
-                android:src="@drawable/ic_wallet"
-                app:tint="@color/white" />
-        </androidx.cardview.widget.CardView>
+    <!-- Transaction date -->
+    <TextView
+        android:id="@+id/tvTransactionDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/inter"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tvTransactionTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvTransactionCategory"
+        tools:text="April 24, 2025" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+    <!-- Transaction note (optional) -->
+    <TextView
+        android:id="@+id/tvTransactionNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter"
+        android:maxLines="1"
+        android:textColor="@color/bottom_nav_selector"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/tvTransactionAmount"
+        app:layout_constraintStart_toStartOf="@+id/tvTransactionTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvTransactionDate"
+        tools:text="Weekly grocery shopping for the family"
+        tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/tvTransactionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grocery Shopping"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:fontFamily="@font/inter_medium" />
+    <!-- Transaction amount -->
+    <TextView
+        android:id="@+id/tvTransactionAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_semibold"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnDeleteTransaction"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="-$123.45"
+        tools:textColor="#F44336" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+    <!-- Delete button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDeleteTransaction"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/ic_delete"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconTint="@color/text_secondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvTransactionCategory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Food"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/inter" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" • "
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvTransactionDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Apr 10, 2025"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/inter" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvTransactionAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-$85.75"
-            android:textColor="@color/expense_red"
-            android:textSize="16sp"
-            android:fontFamily="@font/inter_bold" />
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,6 +32,13 @@
     <color name="expense_red">#FF5252</color>
     <color name="warning_orange">#FFC107</color>
 
+
+
+    <!-- New light colors we need -->
+    <color name="income_green_light">#E8F5E9</color>
+    <color name="expense_red_light">#FFEBEE</color>
+
+
     <!-- Category colors -->
     <color name="category_food">#FF6B6B</color>
     <color name="category_bills">#4A6FE3</color>

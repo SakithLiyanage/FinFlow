@@ -1,3 +1,5 @@
+// Build configuration updated: 2025-04-24 06:50:33 by SakithLiyanage
+
 pluginManagement {
     repositories {
         google {
@@ -11,11 +13,15 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+
+        // Added JitPack repository for MPAndroidChart library
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

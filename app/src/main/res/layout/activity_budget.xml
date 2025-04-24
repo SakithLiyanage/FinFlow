@@ -10,230 +10,278 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/progress_gradient">
+        android:background="@color/white"
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:minHeight="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="30dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Budget"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp" />
 
-                <ImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/back_button"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="@color/text_primary" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Budget"
-                    android:textColor="@color/background"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddBudget"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/inter_medium"
+                android:minWidth="0dp"
+                android:paddingHorizontal="12dp"
+                android:text="Add"
+                android:textAllCaps="false"
+                android:textColor="@color/primary"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:iconSize="18dp"
+                app:iconTint="@color/primary"
+                app:strokeColor="@color/primary"
+                app:strokeWidth="1dp" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
 
-            <!-- Month Selector -->
-            <LinearLayout
+            <!-- Budget summary -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/btnPreviousMonth"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_previous"
-                    app:tint="@color/text_primary" />
-
-                <TextView
-                    android:id="@+id/monthSelector"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:text="April 2025"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:id="@+id/btnNextMonth"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_next"
-                    app:tint="@color/text_primary" />
-            </LinearLayout>
-
-            <!-- Total Budget Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/background"
-                android:backgroundTint="@color/background"
-                android:elevation="4dp"
-                app:cardCornerRadius="12dp">
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/inter_bold"
-                            android:text="Total Monthly Budget"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
-
-                        <ImageView
-                            android:id="@+id/btnEditTotalBudget"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Edit Budget"
-                            android:padding="8dp"
-                            android:src="@drawable/ic_edit"
-                            app:tint="@color/primary" />
-                    </LinearLayout>
+                    android:padding="20dp">
 
                     <TextView
-                        android:id="@+id/tvTotalBudget"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="@font/inter_bold"
-                        android:textColor="@color/primary"
-                        android:textSize="24sp"
-                        tools:text="LKR 120,000" />
-
-                    <ProgressBar
-                        android:id="@+id/budgetProgressBar"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="12dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:max="100"
-                        android:progress="45"
-                        android:progressDrawable="@drawable/progress_bar_blue" />
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="Monthly Budget Summary"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tvBudgetUsed"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:fontFamily="@font/inter"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Total Budget"
                             android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            tools:text="LKR 54,000 used" />
+                            android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tvBudgetRemaining"
+                            android:id="@+id/tvTotalBudget"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/inter"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="LKR 150,000"
                             android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            tools:text="LKR 66,000 remaining" />
+                            android:textSize="16sp" />
                     </LinearLayout>
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
 
-            <!-- Category Budgets -->
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Spent So Far"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvSpentAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_semibold"
+                            android:text="LKR 79,500"
+                            android:textColor="@color/expense_red"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Remaining"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvRemainingAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_semibold"
+                            android:text="LKR 70,500"
+                            android:textColor="@color/income_green"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <!-- Overall budget progress -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_medium"
+                                android:text="Overall Progress"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvBudgetPercentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter_medium"
+                                android:text="53%"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/budgetProgressBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:progress="53"
+                            app:indicatorColor="@color/primary"
+                            app:trackColor="#E0E0E0"
+                            app:trackCornerRadius="4dp"
+                            app:trackThickness="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvBudgetMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/inter"
+                            android:text="You're on track with your monthly budget!"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Category budgets -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Category Budgets"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp" />
+
+            <!-- Empty state message -->
             <LinearLayout
+                android:id="@+id/emptyBudgetState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_budget_empty"
+                    android:tint="@color/text_secondary"
+                    android:alpha="0.5" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Budget Categories"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="No Budgets Set"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/inter"
+                    android:gravity="center"
+                    android:text="Tap the Add button to create your first budget"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
             </LinearLayout>
 
+            <!-- Budget items list -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/budgetCategoriesRecyclerView"
+                android:id="@+id/budgetRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:clipToPadding="false"
-                android:paddingBottom="80dp"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="4"
-                tools:listitem="@layout/item_budget_category" />
-
+                tools:itemCount="3"
+                tools:listitem="@layout/item_budget" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddBudget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Add Budget Category"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/white" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -247,9 +295,8 @@
         app:itemActiveIndicatorStyle="@style/App.ActiveIndicatorStyle"
         app:itemIconSize="24dp"
         app:itemIconTint="@color/bottom_nav_colors"
-        app:itemRippleColor="@color/primary_variant"
+        app:itemRippleColor="@color/primary"
         app:itemTextColor="@color/bottom_nav_colors"
         app:labelVisibilityMode="selected"
         app:menu="@menu/bottom_navigation_menu" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

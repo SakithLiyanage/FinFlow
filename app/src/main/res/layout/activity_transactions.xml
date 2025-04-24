@@ -1,209 +1,368 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light">
+    android:background="@color/background_light">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <!-- TOP HEADER SECTION -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@drawable/home_header_gradient"
+        android:paddingBottom="24dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+        <!-- App Bar -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:minHeight="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:layout_marginTop="36dp"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Transactions"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+        <!-- Month Selector -->
+        <LinearLayout
+            android:id="@+id/monthSelectorLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <ImageView
+                android:id="@+id/btnPrevMonth"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Previous month"
+                android:padding="8dp"
+                android:src="@drawable/ic_chevron_left"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvCurrentMonth"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
+                android:fontFamily="@font/inter_semibold"
+                android:paddingHorizontal="16dp"
+                android:text="April 2025"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-                <ImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/back_button"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="@color/splash_background" />
+            <ImageView
+                android:id="@+id/btnNextMonth"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Next month"
+                android:padding="8dp"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@color/white" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="@string/transactions"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp" />
+    <!-- SUMMARY CARD - Completely redesigned -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/summaryCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="-20dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/headerSection">
 
-                <ImageView
-                    android:id="@+id/btnAddTransaction"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="20dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/add_transaction"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_add"
-                    app:tint="@color/primary" />
-
-            </LinearLayout>
-        </androidx.appcompat.widget.Toolbar>
-
-        <!-- Filter Tabs -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
-            android:background="@color/white">
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Net Balance -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Net Balance"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/filterAllBtn"
-                android:layout_width="0dp"
+                android:id="@+id/tvNetBalance"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/filter_button_background"
-                android:fontFamily="@font/inter_medium"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="All"
-                android:textSize="14sp"
-                android:textColor="@color/filter_text_selector" />
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="-LKR 500.00"
+                android:textColor="@color/expense_red"
+                android:textSize="24sp" />
 
-            <TextView
-                android:id="@+id/filterIncomeBtn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/filter_button_background"
-                android:fontFamily="@font/inter_medium"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Income"
-                android:textSize="14sp"
-                android:textColor="@color/filter_text_selector" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="16dp"
+                android:background="#F0F0F0" />
 
-            <TextView
-                android:id="@+id/filterExpenseBtn"
-                android:layout_width="0dp"
+            <!-- Income & Expense - Using Grid Layout -->
+            <GridLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/filter_button_background"
-                android:fontFamily="@font/inter_medium"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Expense"
-                android:textSize="14sp"
-                android:textColor="@color/filter_text_selector" />
+                android:columnCount="2"
+                android:rowCount="1">
+
+                <!-- Income Section -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_arrow_upward"
+                            app:tint="@color/income_green" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter"
+                            android:text="Income"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvTotalIncome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="LKR 0.00"
+                        android:textColor="@color/income_green"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Expense Section -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_arrow_downward"
+                            app:tint="@color/expense_red" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter"
+                            android:text="Expense"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvTotalExpenses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="LKR 500.00"
+                        android:textColor="@color/expense_red"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </GridLayout>
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
+    <!-- Filter chips -->
+    <HorizontalScrollView
+        android:id="@+id/chipScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/summaryCard">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:chipSpacingHorizontal="8dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/transactionsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="80dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_transaction" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAll"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="All"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_selector"
+                app:chipIconTint="@color/chip_text_color" />
 
-            <!-- Empty State View -->
-            <LinearLayout
-                android:id="@+id/emptyStateView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="32dp"
-                android:visibility="gone"
-                tools:visibility="visible">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipIncome"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Income"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_selector"
+                app:chipIconTint="@color/chip_text_color" />
 
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_empty_transactions"
-                    android:contentDescription="@string/no_transactions"
-                    app:tint="@color/text_secondary" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipExpense"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expense"
+                android:textColor="@color/chip_text_color"
+                app:chipBackgroundColor="@color/chip_background_selector"
+                app:chipIconTint="@color/chip_text_color" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
 
-                <TextView
-                    android:id="@+id/emptyStateText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/inter_medium"
-                    android:text="No transactions yet"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="18sp" />
+    <!-- Transaction list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/transactionsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="88dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chipScrollView"
+        tools:listitem="@layout/item_transaction" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/inter"
-                    android:gravity="center"
-                    android:text="Add your first transaction by tapping the + button below"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
-            </LinearLayout>
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chipScrollView">
 
-        </FrameLayout>
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:alpha="0.5"
+            android:src="@drawable/img_empty_transaction"
+            app:tint="@color/text_secondary" />
 
-    </androidx.core.widget.NestedScrollView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/inter_medium"
+            android:text="No Transactions Yet"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp" />
 
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
+            android:text="Tap the + button to add a new transaction for this month."
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- FAB - FIXED POSITION -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddTransaction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="@string/add_transaction"
+        android:contentDescription="Add Transaction"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/primary"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white" />
 
+    <!-- Bottom navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:background="@drawable/bottom_nav_background"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
         app:elevation="8dp"
         app:itemIconSize="24dp"
         app:itemIconTint="@color/bottom_nav_colors"
-        app:itemRippleColor="@color/primary_variant"
         app:itemTextColor="@color/bottom_nav_colors"
-        app:itemActiveIndicatorStyle="@style/App.ActiveIndicatorStyle"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Current Time and User Info (hidden but storing data) -->
+    <TextView
+        android:id="@+id/tvCurrentTimeUTC"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="2025-04-24 04:03:53"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCurrentUser"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="SakithLiyanage"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

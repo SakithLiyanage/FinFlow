@@ -82,7 +82,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun loadUserData() {
         try {
             // Get current user email from shared preferences
-            val sharedPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            val sharedPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
             userEmail = sharedPrefs.getString("logged_in_email", "") ?: ""
 
             if (userEmail.isEmpty()) {
@@ -93,7 +93,7 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // Load user data from profile preferences
-            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
             userName = profilePrefs.getString("${userEmail}_name", "") ?: ""
             userPhone = profilePrefs.getString("${userEmail}_phone", "") ?: ""
 
@@ -172,7 +172,7 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // Update shared preferences
-            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
             val editor = profilePrefs.edit()
 
             editor.putString("${userEmail}_name", newName)
@@ -244,7 +244,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 // Verify current password
-                val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+                val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
                 val storedPassword = profilePrefs.getString("${userEmail}_password", "")
 
                 Log.d(TAG, "Checking password for user: $userEmail")
@@ -290,7 +290,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun performLogout() {
         try {
             // Clear logged in user from session
-            val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            val sessionPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
             val editor = sessionPrefs.edit()
             editor.clear()
             editor.apply()
@@ -330,7 +330,7 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // Delete user data from profile preferences
-            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
             val editor = profilePrefs.edit()
 
             // Remove all user-related data
@@ -354,7 +354,7 @@ class ProfileActivity : AppCompatActivity() {
             Log.d(TAG, "User data deleted from preferences successfully")
 
             // Clear session
-            val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            val sessionPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
             val sessionEditor = sessionPrefs.edit()
             sessionEditor.clear()
             val sessionResult = sessionEditor.commit()
