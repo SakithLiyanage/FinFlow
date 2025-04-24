@@ -343,26 +343,12 @@
         app:itemIconTint="@color/bottom_nav_colors"
         app:itemTextColor="@color/bottom_nav_colors"
         app:labelVisibilityMode="labeled"
+        app:itemActiveIndicatorStyle="@style/App.ActiveIndicatorStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 
-    <!-- Current Time and User Info (hidden but storing data) -->
-    <TextView
-        android:id="@+id/tvCurrentTimeUTC"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="2025-04-24 04:03:53"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvCurrentUser"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="SakithLiyanage"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

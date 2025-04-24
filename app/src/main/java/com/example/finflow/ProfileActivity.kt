@@ -22,6 +22,10 @@ class ProfileActivity : AppCompatActivity() {
 
     private val TAG = "ProfileActivity"
 
+    // Updated timestamp and user info
+    private val currentDateTime = "2025-04-24 08:49:42"
+    private val currentUser = "SakithLiyanage"
+
     // UI Elements
     private lateinit var ivProfilePicture: ImageView
     private lateinit var tvUserFullName: TextView
@@ -57,6 +61,8 @@ class ProfileActivity : AppCompatActivity() {
             // Set up click listeners
             setupClickListeners()
 
+            Log.d(TAG, "ProfileActivity created at $currentDateTime")
+
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing ProfileActivity", e)
             Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show()
@@ -81,21 +87,22 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadUserData() {
         try {
-            // Get current user email from shared preferences
-            val sharedPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
-            userEmail = sharedPrefs.getString("logged_in_email", "") ?: ""
+            // Use exactly the same approach as in HomeActivity
+            val sharedPreferences = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            userEmail = sharedPreferences.getString("logged_in_email", "") ?: ""
+
+            // Load profile data
+            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            userName = profilePrefs.getString("${userEmail}_name", currentUser) ?: currentUser
+            userPhone = profilePrefs.getString("${userEmail}_phone", "+94 77 123 4567") ?: "+94 77 123 4567"
+
+            Log.d(TAG, "Loading user data: Email=$userEmail, Name=$userName")
 
             if (userEmail.isEmpty()) {
-                Log.e(TAG, "No user logged in")
-                Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show()
-                navigateToLogin()
-                return
+                // Fallback if no email is found
+                Log.w(TAG, "No user email found in session, using default values")
+                userEmail = "user@example.com"
             }
-
-            // Load user data from profile preferences
-            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
-            userName = profilePrefs.getString("${userEmail}_name", "") ?: ""
-            userPhone = profilePrefs.getString("${userEmail}_phone", "") ?: ""
 
             // Display user data
             tvUserFullName.text = userName
@@ -106,6 +113,12 @@ class ProfileActivity : AppCompatActivity() {
 
         } catch (e: Exception) {
             Log.e(TAG, "Error loading user data", e)
+            // Set defaults if loading fails
+            tvUserFullName.text = currentUser
+            tvUserEmail.text = "user@example.com"
+            etFullName.setText(currentUser)
+            etEmail.setText("user@example.com")
+            etPhone.setText("+94 77 123 4567")
         }
     }
 
@@ -171,13 +184,13 @@ class ProfileActivity : AppCompatActivity() {
                 return
             }
 
-            // Update shared preferences
-            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
-            val editor = profilePrefs.edit()
-
-            editor.putString("${userEmail}_name", newName)
-            editor.putString("${userEmail}_phone", newPhone)
-            editor.apply()
+            // Important: Save using the exact same approach as HomeActivity reads from
+            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            profilePrefs.edit().apply {
+                putString("${userEmail}_name", newName)
+                putString("${userEmail}_phone", newPhone)
+                apply()
+            }
 
             // Update UI
             userName = newName
@@ -185,6 +198,7 @@ class ProfileActivity : AppCompatActivity() {
             tvUserFullName.text = userName
 
             Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "Profile updated at $currentDateTime: $userName, $userEmail")
 
         } catch (e: Exception) {
             Log.e(TAG, "Error saving profile changes", e)
@@ -221,7 +235,6 @@ class ProfileActivity : AppCompatActivity() {
             alertDialog.show()
 
             // Set a click listener for the positive button after dialog is shown
-            // This prevents automatic dismissal when validation fails
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val currentPassword = etCurrentPassword.text.toString().trim()
                 val newPassword = etNewPassword.text.toString().trim()
@@ -243,13 +256,11 @@ class ProfileActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                // Verify current password
-                val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
+                // Verify current password (match with HomeActivity's approach)
+                val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
                 val storedPassword = profilePrefs.getString("${userEmail}_password", "")
 
                 Log.d(TAG, "Checking password for user: $userEmail")
-                Log.d(TAG, "Entered current password: $currentPassword")
-                Log.d(TAG, "Stored password: $storedPassword")
 
                 if (storedPassword != currentPassword) {
                     Toast.makeText(this, "Current password is incorrect", Toast.LENGTH_SHORT).show()
@@ -258,9 +269,10 @@ class ProfileActivity : AppCompatActivity() {
 
                 // Update password
                 try {
-                    val editor = profilePrefs.edit()
-                    editor.putString("${userEmail}_password", newPassword)
-                    editor.apply()
+                    profilePrefs.edit().apply {
+                        putString("${userEmail}_password", newPassword)
+                        apply()
+                    }
 
                     Log.d(TAG, "Password updated successfully for user: $userEmail")
                     Toast.makeText(this, "Password changed successfully", Toast.LENGTH_SHORT).show()
@@ -289,17 +301,16 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun performLogout() {
         try {
-            // Clear logged in user from session
-            val sessionPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
-            val editor = sessionPrefs.edit()
-            editor.clear()
-            editor.apply()
+            // Clear session using the same key as HomeActivity
+            val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            sessionPrefs.edit().clear().apply()
 
             // Navigate to login page
             navigateToLogin()
 
             // Show toast
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "User logged out at $currentDateTime")
 
         } catch (e: Exception) {
             Log.e(TAG, "Error during logout", e)
@@ -329,42 +340,23 @@ class ProfileActivity : AppCompatActivity() {
                 return
             }
 
-            // Delete user data from profile preferences
-            val profilePrefs = getSharedPreferences("finovate_profiles", MODE_PRIVATE)
-            val editor = profilePrefs.edit()
-
-            // Remove all user-related data
-            editor.remove("${userEmail}_name")
-            editor.remove("${userEmail}_password")
-            editor.remove("${userEmail}_phone")
-
-            // Also remove any other possible data fields
-            editor.remove("${userEmail}_currency")
-            editor.remove("${userEmail}_profile_pic")
-
-            // Apply changes
-            val result = editor.commit() // Use commit() instead of apply() to get immediate result
-
-            if (!result) {
-                Log.e(TAG, "Failed to commit changes to SharedPreferences")
-                Toast.makeText(this, "Error deleting account data", Toast.LENGTH_SHORT).show()
-                return
+            // Delete user data with the same approach as HomeActivity
+            val profilePrefs = getSharedPreferences("finflow_profiles", MODE_PRIVATE)
+            profilePrefs.edit().apply {
+                remove("${userEmail}_name")
+                remove("${userEmail}_password")
+                remove("${userEmail}_phone")
+                remove("${userEmail}_currency")
+                apply()
             }
-
-            Log.d(TAG, "User data deleted from preferences successfully")
 
             // Clear session
-            val sessionPrefs = getSharedPreferences("finovate_session", MODE_PRIVATE)
-            val sessionEditor = sessionPrefs.edit()
-            sessionEditor.clear()
-            val sessionResult = sessionEditor.commit()
-
-            if (!sessionResult) {
-                Log.e(TAG, "Failed to clear session data")
-            }
+            val sessionPrefs = getSharedPreferences("finflow_session", MODE_PRIVATE)
+            sessionPrefs.edit().clear().apply()
 
             // Success toast
             Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "Account deleted at $currentDateTime")
 
             // Navigate to login - using a slight delay to ensure toast is visible
             Handler(Looper.getMainLooper()).postDelayed({

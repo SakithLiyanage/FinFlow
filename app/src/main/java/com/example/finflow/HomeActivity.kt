@@ -33,6 +33,13 @@ import kotlin.collections.HashMap
 class HomeActivity : AppCompatActivity() {
 
     private val TAG = "HomeActivity"
+    private val CURRENT_TIMESTAMP = "2025-04-24 09:21:31"
+    private val CURRENT_USER = "SakithLiyanage"
+
+    // Notification constants
+    private val CHANNEL_ID = "finflow_channel"
+    private val BUDGET_CHANNEL_ID = "budget_alerts"
+    private val NOTIFICATION_ID = 101
 
     // Core UI Elements
     private lateinit var tvUserName: TextView
@@ -57,8 +64,8 @@ class HomeActivity : AppCompatActivity() {
     private var currentBalance: Double = 0.0
     private var totalIncome: Double = 0.0
     private var totalExpenses: Double = 0.0
-    private var monthlyBudget: Double = 120000.00 // Default budget in LKR
-    private var totalSpent: Double = 0.0          // Current month expenses
+    private var monthlyBudget: Double = 0.00 // Default budget in LKR
+    private var totalSpent: Double = 0.0     // Current month expenses
 
     // Lists for RecyclerViews
     private lateinit var categoryList: ArrayList<Category>
@@ -69,10 +76,6 @@ class HomeActivity : AppCompatActivity() {
 
     // Date formatter
     private val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-
-    // Notification constants
-    private val CHANNEL_ID = "finflow_channel"
-    private val NOTIFICATION_ID = 101
 
     // Activity result handler for adding/editing transactions
     private val addTransactionLauncher = registerForActivityResult(
@@ -113,6 +116,8 @@ class HomeActivity : AppCompatActivity() {
 
         // Load and display user name
         loadUserName()
+
+        Log.d(TAG, "HomeActivity created at $CURRENT_TIMESTAMP for $CURRENT_USER")
     }
 
     private fun configureCurrencyFormatter() {
@@ -159,7 +164,7 @@ class HomeActivity : AppCompatActivity() {
         val userName = profilePrefs.getString("${userEmail}_name", "User")
 
         // Display user name
-        tvUserName.text = userName ?: "Sakith Liyanage"
+        tvUserName.text = userName ?: CURRENT_USER
     }
 
     private fun loadUserData() {
@@ -180,6 +185,8 @@ class HomeActivity : AppCompatActivity() {
 
         // Update UI with data
         updateUI()
+
+        Log.d(TAG, "User data loaded at $CURRENT_TIMESTAMP for $CURRENT_USER")
     }
 
     private fun loadTransactions() {
@@ -208,7 +215,7 @@ class HomeActivity : AppCompatActivity() {
                 transactionList.add(
                     Transaction(
                         id = "welcome",
-                        title = "Welcome, ${tvUserName.text}!",
+                        title = "Welcome, $CURRENT_USER!",
                         amount = 0.0,
                         type = TransactionType.INCOME,
                         category = "Info",
@@ -303,25 +310,51 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadBudget() {
         try {
-            // Load budget from SharedPreferences
-            val sharedPrefs = getSharedPreferences("finflow_budget", Context.MODE_PRIVATE)
+            // Get budget data from the correct SharedPreferences file
+            val sharedPrefs = getSharedPreferences("finflow_budgets", MODE_PRIVATE)
+            val budgetsJson = sharedPrefs.getString("budgets_data", null)
 
-            // Default to 120,000 LKR if not set
-            monthlyBudget = sharedPrefs.getFloat("monthly_budget", 0.00f).toDouble()
+            Log.d(TAG, "Loading budgets at $CURRENT_TIMESTAMP by $CURRENT_USER")
 
-            Log.d(TAG, "Loaded monthly budget: $monthlyBudget LKR")
+            if (!budgetsJson.isNullOrEmpty()) {
+                // Parse the budget list
+                val listType = object : TypeToken<ArrayList<Budget>>() {}.type
+                val budgetsList: ArrayList<Budget> = Gson().fromJson(budgetsJson, listType)
 
-            // If this is the first time, save the default budget
-            if (!sharedPrefs.contains("monthly_budget")) {
-                val editor = sharedPrefs.edit()
-                editor.putFloat("monthly_budget", 0.00f)
-                editor.apply()
+                // Calculate total budget from all budget categories
+                var calculatedBudget = 0.0
+                for (budget in budgetsList) {
+                    calculatedBudget += budget.amount
+                }
+
+                // Set the monthly budget to the calculated total
+                monthlyBudget = calculatedBudget
+
+                Log.d(TAG, "Loaded ${budgetsList.size} budget categories with total: $monthlyBudget LKR")
+            } else {
+                Log.d(TAG, "No budget data found, using default")
+                // No budget data exists yet, keep the default
+                if (monthlyBudget <= 0) {
+                    monthlyBudget = 120000.00 // Default to 120,000 LKR
+                }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error loading budget data", e)
-            monthlyBudget = 0.00 // Fallback to default
+            Log.e(TAG, "Error loading budget data: ${e.message}", e)
+            // Fallback to default
+            if (monthlyBudget <= 0) {
+                monthlyBudget = 120000.00 // Default to 120,000 LKR
+            }
         }
     }
+
+    // Budget class to match the structure used by BudgetsActivity
+    data class Budget(
+        val id: String,
+        val category: String,
+        val amount: Double,
+        var spent: Double = 0.0,
+        val colorResId: Int = R.color.primary
+    )
 
     private fun calculateBalances() {
         totalIncome = 0.0
@@ -440,19 +473,36 @@ class HomeActivity : AppCompatActivity() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
-                val name = getString(R.string.channel_name)
-                val descriptionText = getString(R.string.channel_description)
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                // Main notification channel
+                val mainChannel = NotificationChannel(
+                    CHANNEL_ID,
+                    getString(R.string.channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = getString(R.string.channel_description)
                 }
 
-                // Register the channel with the system
-                val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
+                // Budget alerts channel - higher importance
+                val budgetChannel = NotificationChannel(
+                    BUDGET_CHANNEL_ID,
+                    "Budget Alerts",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "Important notifications about your budget status"
+                    enableVibration(true)
+                    lightColor = ContextCompat.getColor(applicationContext, R.color.primary)
+                    lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+                }
+
+                // Register the channels with the system
+                notificationManager.createNotificationChannel(mainChannel)
+                notificationManager.createNotificationChannel(budgetChannel)
+
+                Log.d(TAG, "Notification channels created at $CURRENT_TIMESTAMP by $CURRENT_USER")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Error creating notification channels", e)
             }
         }
     }
@@ -461,14 +511,63 @@ class HomeActivity : AppCompatActivity() {
         if (monthlyBudget > 0) {
             val budgetPercentage = (totalSpent / monthlyBudget) * 100
 
-            // If budget exceeded 90%, show notification
+            // If budget exceeded 75%, show notification to increase budget
+            if (budgetPercentage >= 75 && shouldShowBudgetNotification()) {
+                showBudgetIncreaseNotification(budgetPercentage.toInt())
+                // Still show in-app warning dialog
+                showBudgetWarningDialog()
+            }
+
+            // Keep the extreme warning at 90%
             if (budgetPercentage >= 90) {
                 showBudgetWarningNotification()
             }
-            // If budget exceeded 75%, show in-app warning
-            else if (budgetPercentage >= 75) {
-                showBudgetWarningDialog()
-            }
+        }
+    }
+
+    private fun shouldShowBudgetNotification(): Boolean {
+        val sharedPrefs = getSharedPreferences("finflow_notifications", MODE_PRIVATE)
+        val lastNotification = sharedPrefs.getLong("last_budget_notification", 0)
+        val currentTime = System.currentTimeMillis()
+
+        // Only show notification once per day (86400000 ms = 24 hours)
+        return currentTime - lastNotification > 86400000
+    }
+
+    private fun showBudgetIncreaseNotification(percentage: Int) {
+        try {
+            // Log the notification event with timestamp and user info
+            Log.d(TAG, "Showing budget increase notification at $CURRENT_TIMESTAMP for user $CURRENT_USER")
+
+            // Create notification content with personalized message
+            val notificationBuilder = NotificationCompat.Builder(this, BUDGET_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle("Budget Alert!")
+                .setContentText("You've used ${percentage}% of your monthly budget. Consider increasing your budget.")
+                .setStyle(NotificationCompat.BigTextStyle()
+                    .bigText("Hi $CURRENT_USER, you've used ${percentage}% of your monthly budget (${currencyFormatter.format(totalSpent)} of ${currencyFormatter.format(monthlyBudget)}). Would you like to increase your budget?"))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+                .setAutoCancel(true)
+
+            // Add action button to open budget settings
+            val budgetIntent = Intent(this, BudgetsActivity::class.java)
+            val pendingIntent = android.app.PendingIntent.getActivity(this, 0, budgetIntent,
+                android.app.PendingIntent.FLAG_IMMUTABLE)
+            notificationBuilder.addAction(R.drawable.ic_budget, "Adjust Budget", pendingIntent)
+
+            // Create unique notification ID based on percentage to avoid duplicates
+            val notificationId = 200 + percentage
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(notificationId, notificationBuilder.build())
+
+            // Save the notification time to avoid showing too frequently
+            val sharedPrefs = getSharedPreferences("finflow_notifications", MODE_PRIVATE)
+            sharedPrefs.edit().putLong("last_budget_notification", System.currentTimeMillis()).apply()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing budget increase notification: ${e.message}", e)
         }
     }
 
