@@ -443,32 +443,67 @@ class HomeActivity : AppCompatActivity() {
         if (monthlyBudget > 0) {
             val budgetPercentage = (totalSpent / monthlyBudget) * 100
 
-            if (budgetPercentage >= 75 && shouldShowBudgetNotification()) {
-                showBudgetIncreaseNotification(budgetPercentage.toInt())
-                showBudgetWarningDialog()
+            // Log budget status to verify calculations
+            Log.d(TAG, "Budget check: spent $totalSpent of $monthlyBudget (${budgetPercentage.toInt()}%)")
+
+            // Check if budget exceeds 80% specifically
+            if (budgetPercentage >= 80 && budgetPercentage < 90 && shouldShowBudgetNotification()) {
+                // Show specific notification for 80% threshold
+                showBudgetIncreaseNotification(budgetPercentage.toInt(), "80_percent")
+
+                // Still show in-app warning dialog
+                showBudgetWarningDialog(80)
             }
 
+            // Keep the extreme warning at 90%
             if (budgetPercentage >= 90) {
                 showBudgetWarningNotification()
             }
         }
     }
 
-    private fun shouldShowBudgetNotification(): Boolean {
-        val sharedPrefs = getSharedPreferences("finflow_notifications", MODE_PRIVATE)
-        val lastNotification = sharedPrefs.getLong("last_budget_notification", 0)
-        val currentTime = System.currentTimeMillis()
-
-        return currentTime - lastNotification > 86400000
+    private fun showBudgetWarningDialog(percentage: Int = 90) {
+        try {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Budget Warning")
+                .setMessage("You've used ${(totalSpent / monthlyBudget * 100).toInt()}% of your monthly budget.")
+                .setPositiveButton("Adjust Budget") { _, _ ->
+                    // Open budget settings
+                    val intent = Intent(this, BudgetsActivity::class.java)
+                    startActivity(intent)
+                }
+                .setNegativeButton("Dismiss") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing budget warning dialog", e)
+        }
     }
 
-    private fun showBudgetIncreaseNotification(percentage: Int) {
+
+    private fun shouldShowBudgetNotification(notificationKey: String = "default"): Boolean {
+        val sharedPrefs = getSharedPreferences("finflow_notifications", MODE_PRIVATE)
+        val lastNotification = sharedPrefs.getLong("last_budget_notification_$notificationKey", 0)
+        val currentTime = System.currentTimeMillis()
+
+        // For testing purposes, make this a shorter interval (30 minutes)
+        val notificationInterval = 30 * 60 * 1000 // 30 minutes in milliseconds
+
+        val shouldShow = currentTime - lastNotification > notificationInterval
+        Log.d(TAG, "Should show notification ($notificationKey)? $shouldShow")
+        return shouldShow
+    }
+
+    private fun showBudgetIncreaseNotification(percentage: Int, notificationKey: String = "default") {
         try {
+            // Log the notification event with timestamp and user info
             Log.d(TAG, "Showing budget increase notification at $CURRENT_TIMESTAMP for user $CURRENT_USER")
 
+            // Create notification content with personalized message
             val notificationBuilder = NotificationCompat.Builder(this, BUDGET_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Budget Alert!")
+                .setContentTitle("Budget Alert - 80% Used!")
                 .setContentText("You've used ${percentage}% of your monthly budget. Consider increasing your budget.")
                 .setStyle(NotificationCompat.BigTextStyle()
                     .bigText("Hi $CURRENT_USER, you've used ${percentage}% of your monthly budget (${currencyFormatter.format(totalSpent)} of ${currencyFormatter.format(monthlyBudget)}). Would you like to increase your budget?"))
@@ -476,18 +511,26 @@ class HomeActivity : AppCompatActivity() {
                 .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
                 .setAutoCancel(true)
 
+            // Add action button to open budget settings
             val budgetIntent = Intent(this, BudgetsActivity::class.java)
-            val pendingIntent = android.app.PendingIntent.getActivity(this, 0, budgetIntent,
-                android.app.PendingIntent.FLAG_IMMUTABLE)
+            val pendingIntent = android.app.PendingIntent.getActivity(
+                this, 0, budgetIntent,
+                android.app.PendingIntent.FLAG_IMMUTABLE
+            )
             notificationBuilder.addAction(R.drawable.ic_budget, "Adjust Budget", pendingIntent)
 
-            val notificationId = 200 + percentage
+            // Create unique notification ID based on the notification key
+            val notificationId = when(notificationKey) {
+                "80_percent" -> 280
+                else -> 200 + percentage
+            }
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(notificationId, notificationBuilder.build())
 
+            // Save the notification time to avoid showing too frequently
             val sharedPrefs = getSharedPreferences("finflow_notifications", MODE_PRIVATE)
-            sharedPrefs.edit().putLong("last_budget_notification", System.currentTimeMillis()).apply()
+            sharedPrefs.edit().putLong("last_budget_notification_$notificationKey", System.currentTimeMillis()).apply()
 
         } catch (e: Exception) {
             Log.e(TAG, "Error showing budget increase notification: ${e.message}", e)
