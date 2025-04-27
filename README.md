@@ -1,4 +1,3 @@
-Copilot said: ### FinFlow: Financial Tracking Mobile Application **FinFlow** is
 FinFlow: Financial Tracking Mobile Application
 
 FinFlow is a feature-rich financial tracking mobile application designed to empower users to manage their personal finances effectively. Built entirely in Kotlin, the app provides a seamless user experience with modern UI elements and robust functionality. FinFlow aims to simplify the process of tracking expenses, managing budgets, and gaining insights into financial behavior while ensuring data security and reliability.
@@ -57,3 +56,5 @@ Technical Highlights:
 
     Responsive Design:
         Adapted layouts for phones and tablets, ensuring a consistent experience across devices.
+![Mockuuups Ultramarine iPhone 16 mockup on modern stand](https://github.com/user-attachments/assets/0afe5577-98f5-4647-9d21-b19399e9a283)
+
